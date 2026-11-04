@@ -5,7 +5,7 @@ Choices made while building the skill, where the request left something open. Ne
 ## Design system, 2026-10-20
 
 - Source: the Neuromine Variant Tool tokens.css, STYLE.md and variant_reports.py, read without changing them, plus a talk deck theme. design/DECISIONS.md lists what was taken and left out.
-- Fonts: Helvetica Neue with Arial fallback and Courier New mono for every output, not the web system stack of the tool. One family is plainer than one per medium.
+- Fonts: Helvetica Neue with Arial fallback for every output, and Courier New for code and commands only, not the web system stack of the tool. One family is plainer than one per medium.
 - Status backgrounds are flat (the end color of the tool's gradient), because the brand has no gradients.
 - A document size scale in pt (9, 11, 14, 20) was added, since memos need one and neither source had it.
 - Logo clear space (half the logo height) and minimum size (38px on screen, 0.5in on a slide) were added; neither source wrote a rule.
@@ -20,7 +20,7 @@ Choices made while building the skill, where the request left something open. Ne
 
 ## Word format, 2026-11-04
 
-- Styles: Title 20pt bold brand blue; Subtitle 14pt Text 2; Cover Eyebrow and Cover Date, Caption, Header and Footer in Courier New 9pt; Heading 1 14pt Ink, Heading 2 11pt Ink, Heading 3 11pt Text 2, all bold Helvetica Neue; Normal 11pt Text. Heading 3 takes Text 2 to read apart from Heading 2 at the same size.
+- Styles: Title 20pt bold brand blue; Subtitle 14pt Text 2; Cover Eyebrow and Cover Date, Caption, Header and Footer in Helvetica Neue 9pt; Heading 1 14pt Ink, Heading 2 11pt Ink, Heading 3 11pt Text 2, all bold Helvetica Neue; Normal 11pt Text. Heading 3 takes Text 2 to read apart from Heading 2 at the same size.
 - Body font, size and color sit in docDefaults and Normal is empty, so the Neuromine Table cell color is not overridden by Normal in Word.
 - The cover band is one PNG (brand blue, 8.5 by 2.75 in, the logo at 0.75 in high, 1 in from the left edge and 0.5 in from the top, the wordmark beside it) anchored behind the text at the page corner in the first-page header. On a white cover the eyebrow reads Neuromine and there is no logo.
 - Header: "Neuromine" as plain text, a tab, STYLEREF Heading 1.
@@ -32,7 +32,7 @@ Choices made while building the skill, where the request left something open. Ne
 
 - Eight layouts: Title, Section, Title and Content, Two Content, Table, Chart, Picture, Closing.
 - Title and Closing are brand blue with the white logo at 0.75 in from the top and left edges, 0.75 in high, the NEUROMINE wordmark beside it, the eyebrow placeholder (idx 15), a Tint 3 bar, the white 54pt headline and the Tint 3 22pt subline. The logo and the wordmark are on these two layouts only.
-- Content layouts are white with the 0.18 in brand blue strip, the headline 40pt bold in brand blue and the footer: the deck name at left and the slide number at right, both Courier New 12pt. brand.md says a content slide footer is the page number only; powerpoint.md wins for PowerPoint.
+- Content layouts are white with the 0.18 in brand blue strip, the headline 40pt bold in brand blue and the footer: the deck name at left and the slide number at right, both Helvetica Neue 12pt. brand.md says a content slide footer is the page number only; powerpoint.md wins for PowerPoint.
 - The python-pptx default theme carries gradient fills and shadows in its format scheme; the build replaces them with flat fills and empty effect lists, and check_deck.py fails on any gradient or shadow.
 - The template holds one guide slide per layout, each slide's text and notes its own instruction. The sample is about building a deck with the skill, so every number in it comes from brand.md.
 - python-pptx stamps its own author; set_core sets the author to the Neuromine data team and fixed dates.
@@ -41,8 +41,8 @@ Choices made while building the skill, where the request left something open. Ne
 
 - Markdown: line 1 eyebrow `NEUROMINE` in inline code, the title H1 on line 3, the italic subtitle and date on line 5, a source line under each figure.
 - The Markdown figure is the Word sample chart: build_markdown_figure.py calls figure_png in build_word.py, so both are the same bytes.
-- HTML: no link element at all; the stacks are "Helvetica Neue", Arial, sans-serif and "Courier New", monospace. check_html.py reads the brand hex list from design/tokens.json.
-- The header mark is `<span class="mark">Neuromine</span>` in plain Courier New Caption text. The cover has a brand blue band with the white logo as a data URI and the wordmark beside it, the only place either appears.
+- HTML: no link element at all; the stacks are "Helvetica Neue", Arial, sans-serif and "Courier New", monospace (code and pre only). check_html.py reads the brand hex list from design/tokens.json.
+- The header mark is `<span class="mark">Neuromine</span>` in plain body font Caption text. The cover has a brand blue band with the white logo as a data URI and the wordmark beside it, the only place either appears.
 - check_html.py builds its Windows browser path from SYSTEMDRIVE, so the file holds no absolute path.
 - The md sample links to an unnumbered H3 fragment, and the HTML sample to an id like s4, since a fragment that is a hash and a number reads as a ticket id to a public-repo scan.
 
@@ -101,3 +101,35 @@ Choices:
 - check_sop.py also fails non-ASCII text, a house rule for SOPs since the first ones were written.
 - The sample is a made-up process, a monthly brand check of published documents, at about 800 words. It names no person, identifier or release count.
 - Rendered once to PDF in a hidden Word to read the numbers; nobody has opened the files in Word by eye.
+
+## Slim cover band, body family labels, Neuromine-first header, 2026-11-04
+
+Two release notes and an SOP made with the skill were reviewed and three things were rejected: the cover band (a tall empty blue block with a small logo, and it looked pale blue in Word), Courier New on the eyebrow, captions, header and footer, and an SOP header that named the program alone when the SOP is a Neuromine resource for that program. The look chosen from a mockup is a slim band with the program name at its right, and the body family for every label.
+
+Why the band looked pale. The band PNG in the rejected files is a flat (31, 79, 174), #1F4FAE, at every pixel read, so the build, Pillow and the agent that made the files were not the cause. The screenshots show the band as (143, 167, 215), the same in light and dark mode. That is the exact half-way blend of #1F4FAE with white ((31 + 255) / 2 = 143, (79 + 255) / 2 = 167, (174 + 255) / 2 = 214.5), so Word drew the header picture faded on screen. Office dark mode also lightens dark fills, so in dark mode the band can look lighter again. A PDF exported from Word in the background shows the band at full (31, 79, 174). No file setting stops either effect; the band stays a flat #1F4FAE PNG, and the printed and PDF copies show it at full strength.
+
+What changed:
+
+- Band: 8.5 by 1.1in instead of 8.5 by 2.75in, flat #1F4FAE. The logo is 0.6in high (was 0.75in), its left edge on the 1in margin, centered on the band height. The wordmark is 17pt (was 19pt), about 0.39 of the logo height, half the logo height to the right of the logo, centered on it. tokens.json font.wordmark document_pt is 17.
+- Program name: a framed paragraph in the first-page header, style Cover Program, Helvetica Neue bold 11pt, caps, 0.5pt letter spacing, Tint 3 #C4D9FF, right aligned. The frame is 3.5in wide and anchored to the right margin, so it runs from 4in to 7.5in from the left page edge; the wordmark ends at 3.32in. Twenty W characters in Arial Bold 11pt with the spacing measure 3.02in, so a 20 character name fits on one line and never meets the wordmark. The name is text, not in the PNG, so one value sets it; a Neuromine-only document leaves it blank.
+- The eyebrow's space before is 0.5in (was 2.5in), so it sits 0.4in under the band.
+- Fonts: Cover Eyebrow, Cover Date, Caption, Header and Footer use Helvetica Neue with the Arial fallback at 9pt. No Word style uses Courier New; tokens.json keeps the mono entry for code and commands.
+- Header from page 2: "Neuromine | " and the program name, or "Neuromine" alone. set_program in build_word.py sets it and the cover name together; the Starter has one PROGRAM line.
+- SOP: page 1 has the same band and program name (different first page is now on), with the header line under the band; every page's header reads "Neuromine | " and the program, "Standard Operating Procedure" at right; the footer is the same on page 1 and later pages. Styles, numbering, sections, tables and checks are unchanged. The sample SOP is now an ALS TDI SOP (ALSTDI-SOP-NNN-V1), so its header shows a program; its Scope line names that program instead of every program, and the body is 812 words.
+- Checkers: check_docx.py fails label-fonts when a Header, Footer, Caption, Cover Eyebrow or Cover Date style names Courier New, and cover-band when the first-page header has no picture. check_sop.py has the same label-fonts check and its sop-id check also compares the page 1 footer id.
+- The test files from the end-to-end test were built on the old template and fail label-fonts; the board checker notes this and the republish rebuilds them.
+- The two samples were exported to PDF once in a background Word to read the positions: the program name ends at 7.49in, centered at 0.55in; the eyebrow starts at 1.5in; the SOP header line sits at 1.26in under the band. Nobody has opened the files in Word by eye.
+
+The earlier note that the Word cover band carries a 19pt wordmark beside a 0.75in logo, and the SOP rows that say no logo and Courier New for the header and footer, are replaced by this section.
+
+## Courier New for code only in every format, 2026-11-04
+
+The body family for labels, chosen for Word and SOPs above, now holds in the other formats too.
+
+- PowerPoint: the master footer, slide number and date placeholders take the theme body font (Helvetica Neue) instead of Courier New. The cover eyebrow already used the theme font. The template's guide table names Helvetica Neue for the footer and page number. No slide style uses Courier New; a command line typed on a slide is the one place it may be set.
+- Excel: Neuromine Eyebrow, Date and Caption and the print header and footer use Helvetica Neue, so their font family code is Swiss (2) instead of Modern (3). No part of a workbook names Courier New.
+- HTML: .doc-header, .mark, .cover-date, blockquote footer, .bar-value and the @page page number use the body stack; --font-mono is on code and pre only.
+- Markdown: no change. The eyebrow is inline code only because that is how the format marks it; the viewer sets the font.
+- tokens.json keeps mono and web_mono_stack, for code and commands only.
+- Checkers: check_deck.py label-fonts fails when a footer, slide number, date or eyebrow placeholder in the master, a layout or a slide names Courier New; check_xlsx.py label-fonts fails on Courier New in the Eyebrow, Date or Caption style, a cell in those styles or a print header or footer; check_html.py label-fonts fails when the header, mark, cover date, quote source, bar value or page number rule uses the mono font.
+- The test files from the end-to-end test were built on the old templates: the pptx and xlsx fail label-fonts and the html fails label-fonts and style-block. The board checker notes this and the republish rebuilds them.

@@ -49,12 +49,13 @@ Contrast.
 
 - Headings: Helvetica Neue 600, fallback Arial, then sans-serif. On the web: "Helvetica Neue", Arial, sans-serif.
 - Body: Helvetica Neue 400, same fallback. Line height 1.6 on the web, 1.15 in Office files.
-- Labels and page furniture (header and footer text, page numbers, file names, commands and code): Courier New 400, fallback monospace.
+- Labels and page furniture (eyebrow, captions, source lines, dates, header and footer text, page numbers) use the body family: Helvetica Neue, fallback Arial. This holds in every format.
+- Courier New for code and commands only (file names, commands, code), fallback monospace.
 - Weights: 400 body, 500 button labels, 600 headings and card titles, 700 the eyebrow and slide headlines.
 - Sizes on a web page (px): 11 eyebrow, 12 chips and small notes, 13 buttons and captions, 14 body and table cells, 15 card titles, 28 the one page heading.
 - Sizes on a slide (pt, 16:9 at 13.333 by 7.5 in): 12 page number, 14 eyebrow, 16 command line and chart labels, 22 title slide subline, 40 content slide headline, 54 title slide headline.
 - Sizes in a document (pt): 9 eyebrow, caption and source line, 11 body and table cells, 14 section heading, 20 document title.
-- Sentence case everywhere: titles, headings, buttons, table headers, axis labels. No all caps, except the small eyebrow label, uppercase with a little letter spacing (0.3px on the web, 2pt on a slide), and the NEUROMINE wordmark (see Cover page). Program names keep their own casing: Answer ALS, ALS TDI, Neuromine.
+- Sentence case everywhere: titles, headings, buttons, table headers, axis labels. No all caps, except the small eyebrow label, uppercase with a little letter spacing (0.3px on the web, 2pt on a slide), the NEUROMINE wordmark and the program name on the document cover band (see Cover page). Program names keep their own casing: Answer ALS, ALS TDI, Neuromine.
 
 ## Headings
 
@@ -80,15 +81,15 @@ Contrast.
 
 There is no dark logo, so on white the program name is written in text.
 
-- Header: "Neuromine" (or the program the document is for, Answer ALS or ALS TDI) at left; the section name at right. Courier New, Caption #4B5563, 9pt. A 1px Rule #E5E7EB under the header.
-- Footer: page number at right in Courier New, Placeholder #6E7581, 9pt; nothing at left. A 1px Rule #E5E7EB above the footer.
+- Header: "Neuromine" at left, or "Neuromine | " and the program the document is for ("Neuromine | Answer ALS", "Neuromine | ALS TDI"), since every document is a Neuromine resource; the section name at right. Body family, Caption #4B5563, 9pt. A 1px Rule #E5E7EB under the header.
+- Footer: page number at right in the body family, Placeholder #6E7581, 9pt; nothing at left. A 1px Rule #E5E7EB above the footer.
 - On a content slide the footer is the page number only, bottom right, Placeholder at 12pt.
 
 ## Cover page
 
-- A full-width brand blue #1F4FAE band across the top of the page, about one quarter of the page high, with the white logo at its top left.
-- Below the band, left aligned: the eyebrow (Caption), the title (Helvetica Neue 600, Brand, 20pt or larger), the subtitle (Text 2).
-- Date at bottom left in Courier New, Caption.
+- A slim full-width brand blue #1F4FAE band across the top of the page, 1.1in high in a document. In it: the white logo, 0.6in high, its left edge on the left margin and centered on the band height; the NEUROMINE wordmark beside it; and at the right, on the right margin, the program name (Answer ALS, ALS TDI) in Tint 3 #C4D9FF, bold, uppercase with a little letter spacing, 11pt, centered on the band height. A Neuromine-only document leaves the program name blank. The program name is at most 20 characters and never touches the wordmark.
+- Below the band, about 0.4in under it, left aligned: the eyebrow (Caption), the title (Helvetica Neue 600, Brand, 20pt or larger), the subtitle (Text 2).
+- Date at bottom left in the body family, Caption.
 - A title or closing slide is brand blue all over: white logo top left at 0.75in high, eyebrow in Tint 3, a short Tint 3 bar, headline in white at 54pt, subline in Tint 3 at 22pt.
 
 The logo is design/assets/neuromine-logo-light.png, the white Neuromine mark (web copy: https://dataportal.answerals.org/logo_light.png).
@@ -102,8 +103,8 @@ The logo is design/assets/neuromine-logo-light.png, the white Neuromine mark (we
 Wordmark: the lettering NEUROMINE sits to the right of the logo, as in the Variant Tool header.
 
 - Helvetica Neue 700, fallback Arial (the Variant Tool sets it in Roboto first; Roboto is not on every device). White #FFFFFF on brand blue #1F4FAE only.
-- All capitals as typed, NEUROMINE, with no letter spacing (0) and no other word beside it.
-- Size about 0.35 of the logo height (19 to 54 in the Variant Tool): 19pt beside the 0.75in logo on a slide or the document cover band, 18px beside the 50px logo on a page.
+- All capitals as typed, NEUROMINE, with no letter spacing (0) and no other word beside it; the program name at the far right of the document cover band is not beside it.
+- Size about 0.35 of the logo height (19 to 54 in the Variant Tool): 19pt beside the 0.75in logo on a slide, 17pt beside the 0.6in logo on the document cover band, 18px beside the 50px logo on a page.
 - Centered on the logo's height, half the logo height to its right (24px on a page, the nearest spacing step).
 - Used only next to the logo: the title and closing slides, the document cover band and the HTML cover band. Never alone and never on white. The eyebrow NEUROMINE in a Markdown file or a sheet is an eyebrow, not the wordmark, and keeps the eyebrow style.
 

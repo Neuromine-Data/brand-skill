@@ -4,7 +4,7 @@ Rules for writing a .docx in the Neuromine brand. Read https://raw.githubusercon
 
 ## Start from the template
 
-Download https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-template.docx, open it (python-docx: `Document("neuromine-template.docx")`), delete its one empty body paragraph, then add content. The template already holds every style, the cover band with the logo, the header, the footer, the page setup, the theme colors and the font fallback. https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample.docx shows every recipe below. Never restyle text by hand when a style exists: apply the style.
+Download https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-template.docx, open it (python-docx: `Document("neuromine-template.docx")`), delete its one empty body paragraph, then add content. The template already holds every style, the cover band with the logo, the wordmark and an empty program name, the header, the footer, the page setup, the theme colors and the font fallback. https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample.docx shows every recipe below. Never restyle text by hand when a style exists: apply the style.
 
 To change the template, edit `scripts/build_word.py` and run it. Do not edit the .docx files by hand. An SOP does not use this template; see SOPs.
 
@@ -12,7 +12,10 @@ To change the template, edit `scripts/build_word.py` and run it. Do not edit the
 
 ```python
 from docx import Document
+PROGRAM = "ALS TDI"
 doc = Document("neuromine-template.docx")
+doc.sections[0].first_page_header.paragraphs[1].runs[0].text = PROGRAM
+doc.sections[0].header.paragraphs[0].runs[0].text = "Neuromine | " + PROGRAM if PROGRAM else "Neuromine"
 empty = doc.paragraphs[0]._p
 empty.getparent().remove(empty)
 doc.add_paragraph("Release report", style="Cover Eyebrow")
@@ -25,6 +28,8 @@ doc.sections[0].header.paragraphs[0]._p.xpath(".//w:fldSimple//w:t")[0].text = "
 doc.save("neuromine-release-8-summary.docx")
 ```
 
+The PROGRAM line sets the program name on the cover band and in the page 2 header together, so the two never disagree: "Answer ALS" or "ALS TDI", at most 20 characters, or "" for a Neuromine-only document. `set_program` in `build_word.py` does the same.
+
 ## Styles
 
 Use only these styles. Names are as Word shows them; python-docx takes the same names.
@@ -33,8 +38,9 @@ Use only these styles. Names are as Word shows them; python-docx takes the same 
 | --- | --- | --- |
 | Cover title | Title | Helvetica Neue bold, 20pt, #1F4FAE, right indent keeps it off the right third of the page |
 | Cover subtitle | Subtitle | Helvetica Neue 14pt, #374151 |
-| Cover eyebrow | Cover Eyebrow | Courier New bold 9pt, caps, #4B5563 |
-| Cover date | Cover Date | Courier New 9pt, #4B5563 (first-page footer) |
+| Cover eyebrow | Cover Eyebrow | Helvetica Neue bold 9pt, caps, a little letter spacing, #4B5563 |
+| Cover date | Cover Date | Helvetica Neue 9pt, #4B5563 (first-page footer) |
+| Cover program name | Cover Program | Helvetica Neue bold 11pt, caps, a little letter spacing, #C4D9FF, right aligned (first-page header, on the band) |
 | Section | Heading 1 | Helvetica Neue bold, 14pt, #1A2332 |
 | Subsection | Heading 2 | Helvetica Neue bold, 11pt, #1A2332 |
 | Minor heading | Heading 3 | Helvetica Neue bold, 11pt, #374151 |
@@ -43,19 +49,19 @@ Use only these styles. Names are as Word shows them; python-docx takes the same 
 | Steps | List Number | #1F4FAE numbers |
 | Quotation | Quote | Helvetica Neue 11pt, #374151, indented both sides, no italics |
 | Key point | Callout | #EEF4FF fill, 3px #1F4FAE left bar |
-| Table or chart label | Caption | Courier New 9pt, #4B5563 |
+| Table or chart label | Caption | Helvetica Neue 9pt, #4B5563 |
 | Tables | Neuromine Table (table style) | see Table recipe |
 
-The sizes are the document sizes in brand.md: 20pt title, 14pt section heading, 11pt body and table cells, 9pt eyebrow, caption, header and footer. No other size is used. There are no rules under headings. Do not use Heading 4 or lower; split the section instead.
+The sizes are the document sizes in brand.md: 20pt title, 14pt section heading, 11pt body and table cells, 9pt eyebrow, caption, header and footer, and 11pt for the program name on the band. No other size is used. There are no rules under headings. Do not use Heading 4 or lower; split the section instead.
 
 ## Fonts
 
 | Role | Font | Office-safe fallback |
 | --- | --- | --- |
 | Headings, title, body | Helvetica Neue | Arial |
-| Eyebrow, captions, header, footer, cover date | Courier New | none needed |
+| Eyebrow, captions, header, footer, cover date, cover program name | Helvetica Neue (the body family) | Arial |
 
-The template's font table names Arial as the fallback (`altName`) for Helvetica Neue, so Word swaps it in where Helvetica Neue is missing, as on most Windows machines. Courier New ships with Windows and macOS. A render you make yourself in a sandbox shows the fallback; do not change the fonts in the styles because of it. Never embed fonts.
+Every label and all page furniture use the body family. Courier New is for code and commands only and no Word style uses it. The template's font table names Arial as the fallback (`altName`) for Helvetica Neue, so Word swaps it in where Helvetica Neue is missing, as on most Windows machines. A render you make yourself in a sandbox shows the fallback; do not change the fonts in the styles because of it. Never embed fonts.
 
 ## Page setup
 
@@ -65,18 +71,18 @@ US Letter, portrait, single column, 1 inch margins on all four sides. Header and
 
 Page 1 is the cover and uses its own header and footer ("different first page" is on).
 
-- Header, page 2 onward: "Neuromine" at left, a tab, then a `STYLEREF "Heading 1"` field at right that shows the current section. Courier New 9pt, #4B5563, a 1px #E5E7EB rule below. For an Answer ALS or ALS TDI document, change the text of the header's first run to that program name.
-- Footer, page 2 onward: a `PAGE` field at right, nothing at left. Courier New 9pt, #6E7581, a 1px #E5E7EB rule above.
-- Cover header: the brand blue band with the logo. Cover footer: the date, style Cover Date, for example "November 2026".
-- All of this comes from the Header, Footer and Cover Date styles; do not format it by hand.
+- Header, page 2 onward: "Neuromine | " and the program name at left ("Neuromine | Answer ALS", "Neuromine | ALS TDI"), or "Neuromine" alone for a Neuromine-only document, a tab, then a `STYLEREF "Heading 1"` field at right that shows the current section. Helvetica Neue 9pt, #4B5563, a 1px #E5E7EB rule below. The Starter's PROGRAM line sets the header's first run and the cover program name together.
+- Footer, page 2 onward: a `PAGE` field at right, nothing at left. Helvetica Neue 9pt, #6E7581, a 1px #E5E7EB rule above.
+- Cover header: the brand blue band with the logo and wordmark, and the program name paragraph (style Cover Program, `first_page_header.paragraphs[1]`) on its right. Cover footer: the date, style Cover Date, for example "November 2026".
+- All of this comes from the Header, Footer, Cover Program and Cover Date styles; do not format it by hand.
 
 Write each Heading 1 as number, full stop, space, name ("2. Methods") so the header reads well.
 
 ## Cover page recipe
 
-The template cover has a full-width #1F4FAE band across the top quarter of the page, with the white Neuromine logo at its top left and the NEUROMINE wordmark beside it (brand.md Wordmark). The band is a picture behind the text in the first-page header. Keep it; do not draw a shape or add the logo anywhere else.
+The template cover has a slim full-width #1F4FAE band across the top of the page, 8.5in wide and 1.1in high. The white Neuromine logo is 0.6in high, its left edge on the 1in margin, centered on the band height, with the NEUROMINE wordmark beside it, 17pt, half the logo height to its right (brand.md Wordmark). The band with the logo and wordmark is a flat PNG behind the text in the first-page header. The program name is text, not part of the picture: a framed paragraph in the first-page header, Tint 3 #C4D9FF, bold, uppercase, 11pt, its right edge on the right margin (7.5in from the left page edge), centered on the band height, set by the Starter's PROGRAM line and blank for a Neuromine-only document. Its frame starts 4in from the left page edge, clear of the wordmark, and holds up to 20 characters on one line. Keep all of it; do not draw a shape, move the frame or add the logo anywhere else.
 
-1. Cover Eyebrow: two to four words for the kind of document ("Release report"). Its space before puts the block below the band.
+1. Cover Eyebrow: two to four words for the kind of document ("Release report"). Its space before puts it about 0.4in under the band.
 2. Title: the document title. No word over 13 characters, since a long word at 20pt sits badly beside the band. When the brief fixes a longer word, hyphenate it at a syllable (end the first part with a hyphen, then a line break run: `run.add_break()`). `check_docx.py` fails `title-width` on any Title word over 13 characters.
 3. Subtitle: one line on what the document is.
 4. Put the date in the first-page footer, `doc.sections[0].first_page_footer.paragraphs[0]` (style Cover Date). The template holds the placeholder "Month Year" there; replace it.
@@ -133,7 +139,8 @@ SOPs have their own format file, https://raw.githubusercontent.com/Neuromine-Dat
 ## Checklist before sending
 
 - Started from the Neuromine template; no direct font, size or color changes.
-- Cover has the band, eyebrow, title, subtitle and date; the first Heading 1 starts page 2.
+- Cover has the band, the program name (or blank for Neuromine only), eyebrow, title, subtitle and date; the first Heading 1 starts page 2.
+- Cover program name and the header's first run name the same program.
 - `page_break_before` is on the first Heading 1 only; no empty paragraphs or page break runs push content down.
 - Headings go H1, H2, H3 in order with no skipped level; each H1 reads "N. Name".
 - Every table uses Neuromine Table and has a caption under it; numbers and the header cells over them are right aligned.

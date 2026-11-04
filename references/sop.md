@@ -4,7 +4,7 @@ Rules for writing a standard operating procedure (SOP) as a .docx in the Neuromi
 
 ## Start from the template
 
-Download https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sop-template.docx and fill it in place. It already holds every style, the automatic numbering, the title table, the revision history table, the header, the footer and the page setup. Each line that starts with "Guide:" says what goes there; replace it or remove it. https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sop-sample.docx is a filled SOP for a made-up process. Never build an SOP from a blank document, from neuromine-template.docx or from an older house SOP file.
+Download https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sop-template.docx and fill it in place. It already holds every style, the automatic numbering, the title table, the revision history table, the page 1 band, the header, the footer and the page setup. Each line that starts with "Guide:" says what goes there; replace it or remove it. https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sop-sample.docx is a filled SOP for a made-up process. Never build an SOP from a blank document, from neuromine-template.docx or from an older house SOP file.
 
 To change the template, edit `scripts/build_sop.py` and run it. Do not edit the .docx files by hand.
 
@@ -16,7 +16,15 @@ from docx import Document
 from docx.oxml.ns import qn
 from docx.text.paragraph import Paragraph
 
+PROGRAM = "ALS TDI"
+SOP_ID = "ALSTDI-SOP-NNN-V1"
 doc = Document("neuromine-sop-template.docx")
+sec = doc.sections[0]
+sec.first_page_header.paragraphs[1].runs[0].text = PROGRAM
+for head in (sec.first_page_header.paragraphs[2], sec.header.paragraphs[0]):
+    head.runs[0].text = "Neuromine | " + PROGRAM if PROGRAM else "Neuromine"
+for foot in (sec.first_page_footer, sec.footer):
+    foot.paragraphs[0].runs[0].text = SOP_ID
 
 def put(paragraph, text, label=None):
     for child in list(paragraph._p):
@@ -35,7 +43,6 @@ for cell, text in zip(doc.tables[0].rows[1].cells, ["Data Release Sign-off", "1"
     put(cell.paragraphs[0], text)
 for cell, text in zip(doc.tables[1].rows[1].cells, ["1", "2026-11-04", "Initial SOP."]):
     put(cell.paragraphs[0], text)
-doc.sections[0].footer.paragraphs[0].runs[0].text = "NEUROMINE-SOP-NNN-V1"
 purpose = next(p for p in doc.paragraphs if p.text.startswith("Guide: why"))
 put(purpose, "This SOP sets out how a data release is signed off.")
 second = copy_after(purpose)
@@ -44,8 +51,10 @@ step = next(p for p in doc.paragraphs if p.style.name == "SOP Step")
 put(step, "Collect the release files")
 doc.core_properties.title = "Data Release Sign-off"
 doc.core_properties.author = "Neuromine data team"
-doc.save("NEUROMINE-SOP-NNN-V1. Data Release Sign-off.docx")
+doc.save("ALSTDI-SOP-NNN-V1. Data Release Sign-off.docx")
 ```
+
+PROGRAM sets the program name on the page 1 band and in the header of every page together: "Answer ALS" or "ALS TDI", at most 20 characters, or "" for a NEUROMINE- SOP. SOP_ID goes in the footer of page 1 and of every later page. `set_sop_program` and `set_sop_id` in `build_sop.py` do the same.
 
 ## How to build an SOP
 
@@ -54,14 +63,14 @@ With python-docx, in this order. `scripts/build_sop.py` `build_sample` does ever
 1. Copy the template. Download neuromine-sop-template.docx and open it with `Document(path)`. Save under the SOP file name at the end, never over the template.
 2. Fill the title table. Row 2 of `doc.tables[0]` holds three cells under the labels Title, Version Number and Effective Date. Put the title, the version as a plain number (1) and the date as YYYY-MM-DD. Change only row 2; leave the label row alone. To change a cell, clear the runs of its one paragraph and add one run with the text, as `put` in the Starter does.
 3. Add the revision row. Row 2 of `doc.tables[1]` is the first row: 1, the date, "Initial SOP." For a later revision, deepcopy the last row's XML (`row._tr`), insert it after that row with `addnext`, and fill it with 1, the new date and what changed.
-4. Set the SOP id. The footer's first run holds PREFIX-SOP-NNN-V1. Write the SOP id there, for example NEUROMINE-SOP-NNN-V1. Leave the tab, the word Page and the page number field.
+4. Set the program and the SOP id, as the Starter does. The program name goes in the band's program paragraph and after "Neuromine | " in both header lines (page 1 and later pages). The first run of both footers (page 1 and later pages) holds PREFIX-SOP-NNN-V1; write the SOP id there, for example ALSTDI-SOP-NNN-V1. Leave the tab, the word Page and the page number field.
 5. Replace each section's guide text. Under each SOP Section line (Purpose, Scope, Definitions and Acronyms, Procedures, References) the template holds one Normal "Guide:" paragraph. Put your first paragraph of text in it. For more paragraphs, deepcopy it and insert each copy after the last with `addnext`.
 6. Add terms. Under Definitions and Acronyms, fill the SOP Term line: a bold run with the term and a colon, then a plain run with what it means. For each further term, deepcopy that paragraph's XML and insert it after the last term, so the automatic number (3.1, 3.2) carries. If there are no terms, remove the SOP Term line and write "None." in the Normal paragraph.
 7. Add steps. Under Procedures, each step is one SOP Step line (the step name) followed by four SOP Detail lines: Inputs, Steps, Outputs and Checks, each with a bold label run. To add a step, deepcopy the SOP Step paragraph and its four SOP Detail paragraphs and insert the copies after the last detail line. The automatic number (4.1, 4.2) carries with the XML. Never type a number, and never apply another style to a step line. The last step is Final validation, which holds only Checks lines.
 8. Remove every guide line. Delete each paragraph or cell text that still starts with "Guide:", with `p._p.getparent().remove(p._p)` for a paragraph. Do not leave empty paragraphs in their place.
 9. Set the core properties. `doc.core_properties.title` is the SOP title; `author` and `last_modified_by` are a role or "Neuromine data team", never a person's name.
-10. Name the file PREFIX-SOP-NNN-VN. Title.docx, for example "NEUROMINE-SOP-NNN-V1. Data Release Sign-off.docx", and save.
-11. Run `python scripts/check_sop.py "NEUROMINE-SOP-NNN-V1. Data Release Sign-off.docx"`. Fix every FAIL and run it again until each line reads PASS. Its words line prints the body word count.
+10. Name the file PREFIX-SOP-NNN-VN. Title.docx, for example "ALSTDI-SOP-NNN-V1. Data Release Sign-off.docx", and save.
+11. Run `python scripts/check_sop.py "ALSTDI-SOP-NNN-V1. Data Release Sign-off.docx"`. Fix every FAIL and run it again until each line reads PASS. Its words line prints the body word count.
 
 ## Styles
 
@@ -77,15 +86,17 @@ Use only these styles. Names are as Word shows them; python-docx takes the same 
 | Inputs, Steps, Outputs and Checks lines | SOP Detail | Helvetica Neue 11pt, #2C3E50, #1F4FAE round bullet |
 | Body text | Normal | Helvetica Neue 11pt, #2C3E50, line 1.15 |
 | Title table and revision history | Neuromine Table (table style) | header row #F4F6FB fill, bold #1A2332, #D8DCE5 rule; body #374151 with #DFE3EB rules |
-| Header and footer | Header, Footer | Courier New 9pt, #4B5563 header and #6E7581 footer, #E5E7EB rule |
+| Header and footer | Header, Footer | Helvetica Neue 9pt (the body family), #4B5563 header and #6E7581 footer, #E5E7EB rule |
+| Program name on the page 1 band | Cover Program | Helvetica Neue bold 11pt, caps, #C4D9FF, right aligned |
 
-Font fallback is as in word.md: Helvetica Neue with Arial, Courier New for the header and footer. The only direct formatting allowed is bold on a label run (a term, or Inputs:, Steps:, Outputs:, Checks:). No other style is used: no Heading 1 to 3, no List Bullet or List Number, no Callout, no Caption.
+Font fallback is as in word.md: Helvetica Neue with Arial, the body family for the header and footer too; no SOP style uses Courier New. The only direct formatting allowed is bold on a label run (a term, or Inputs:, Steps:, Outputs:, Checks:). No other style is used: no Heading 1 to 3, no List Bullet or List Number, no Callout, no Caption.
 
 ## Page setup
 
-US Letter, portrait, single column, 1 inch margins on all four sides, header and footer 0.5 inch from the page edge. The same header and footer run on every page. Page 1 is the cover: the Title, the title table and the revision history. Purpose starts page 2 (page break before is set on it in the template). Do not add section breaks, page break runs or empty paragraphs.
+US Letter, portrait, single column, 1 inch margins on all four sides, header and footer 0.5 inch from the page edge. Page 1 is the cover: the band, then the Title, the title table and the revision history. "Different first page" is on so the band shows on page 1 only; the header and footer text is the same on every page. Purpose starts page 2 (page break before is set on it in the template). Do not add section breaks, page break runs or empty paragraphs.
 
-- Header: "Neuromine" at left, a tab, "Standard Operating Procedure" at right. For an Answer ALS or ALS TDI SOP, change the header's first run to that program name.
+- Band, page 1 only: the same band as a Word cover (word.md Cover page recipe), 8.5in by 1.1in, #1F4FAE, the 0.6in white logo on the left margin, the NEUROMINE wordmark beside it, and the program name at the right on the right margin. It is a picture behind the text in the first-page header, with the program name as text.
+- Header, every page: "Neuromine | " and the program the SOP is for at left ("Neuromine | Answer ALS", "Neuromine | ALS TDI"), or "Neuromine" alone for a NEUROMINE- SOP, a tab, "Standard Operating Procedure" at right. On page 1 it sits under the band.
 - Footer: the SOP id at left, a tab, "Page" and a `PAGE` field at right.
 
 ## Title table
@@ -133,7 +144,7 @@ These hold for SOPs and for nothing else in the brand. `check_sop.py` tests the 
 - No ticket ids, tracker names, board or local paths, and no staff names. Name people by role ("the data owner", "a team member on the rota"). (checked: staff names and identifier shaped tokens)
 - File name: PREFIX-SOP-NNN-VN. Title.docx, with the prefix AALS- for Answer ALS, ALSTDI- for ALS TDI or NEUROMINE- for Neuromine. The data owner assigns the number; until then write NNN, in the file name and in the footer. (checked)
 - A revised SOP stays at V1, with a new revision history row, unless the data owner asks for V2.
-- No cover band and no logo anywhere in an SOP. The title table is the cover.
+- The band with the logo and wordmark is on page 1 only, in the first-page header; nowhere else in an SOP. Under it the title table is the cover.
 - The PDF is exported by the data owner in Word when the SOP is cleared, not by an agent. Hand back the .docx only.
 - ASCII only. Word turns straight quotes into curly quotes and two hyphens into a dash as you type; replace them before you hand back. (checked)
 
@@ -141,16 +152,17 @@ These hold for SOPs and for nothing else in the brand. `check_sop.py` tests the 
 
 Still apply:
 
-- Fonts and fallback (brand.md Typography, word.md Fonts): Helvetica Neue with Arial, Courier New for the header and footer, never embedded.
+- Fonts and fallback (brand.md Typography, word.md Fonts): Helvetica Neue with Arial, the body family for the header and footer too, never embedded.
 - Colors (brand.md Palette): the title in #1F4FAE, section and step lines in #1A2332, body in #2C3E50.
-- Header and footer look (word.md Header and footer): Courier New 9pt with the #E5E7EB rule; the text is as in Page setup above.
+- Header and footer look (word.md Header and footer): Helvetica Neue 9pt with the #E5E7EB rule; the text is as in Page setup above.
+- The cover band (brand.md Cover page, word.md Cover page recipe) on page 1, with the program name; the text below it is the SOP cover, not the Word cover eyebrow, subtitle and date.
 - Table look (word.md Table recipe, steps 1 and 2) for the title table and the revision history.
 - Writing (brand.md Writing): plain words, short sentences, no em or en dash, none of the banned words.
 - Dates (brand.md Dates): YYYY-MM-DD in the tables.
 
 Do not apply:
 
-- The cover band, the logo and the wordmark (brand.md Cover page, word.md Cover page recipe).
+- The Word cover eyebrow, subtitle and cover date (word.md Cover page recipe), and the logo or wordmark anywhere but the page 1 band.
 - The numbered Heading 1 recipe ("2. Methods") and the STYLEREF header field (word.md).
 - Callouts (brand.md Callouts, word.md Callout recipe).
 - Charts and figures (brand.md Charts, word.md Charts). If a step needs a picture, describe it in words.
@@ -172,6 +184,7 @@ Follow the Writing section in brand.md. Write for someone who runs the process f
 - References filled, or "None."
 - Body between 700 and 1,000 words, never over 1,100.
 - No ticket id, path or staff name; people by role.
-- Footer SOP id and file name match: PREFIX-SOP-NNN-VN. Title.docx.
+- Footer SOP id (page 1 and later pages) and file name match: PREFIX-SOP-NNN-VN. Title.docx.
+- Program name on the band and in the header name the same program.
 - Core properties: title set, author a role or "Neuromine data team".
 - `python scripts/check_sop.py "PREFIX-SOP-NNN-V1. Title.docx"` prints PASS on every line.

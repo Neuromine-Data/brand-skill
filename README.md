@@ -1,6 +1,6 @@
 # brand-skill
 
-The Neuromine brand skill tells an AI agent how to make documents, decks, sheets, pages and figures in the Neuromine brand, for Neuromine, Answer ALS and ALS TDI outputs. It holds the brand rules (palette, type, logo and wordmark, layout, voice), one rules file per format, a ready-made template for each format, a checker for each format and the scripts that build the templates. It holds no data.
+The Neuromine brand skill tells an AI agent how to make documents, decks, sheets, pages and figures in the Neuromine brand, for Neuromine, Answer ALS and ALS TDI outputs. It holds the brand rules, one rules file, template and checker per format, and the scripts that build the templates. It holds no data.
 
 ## Give this to an agent
 
@@ -12,32 +12,16 @@ The brand rules every format shares are in https://raw.githubusercontent.com/Neu
 
 ## Formats
 
-- Word (.docx), memos and reports with a cover band: rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/word.md, template https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-template.docx, sample https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample.docx, checker https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_docx.py
-- PowerPoint (.pptx), 16:9 decks in eight layouts: rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/powerpoint.md, template https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-template.pptx, sample https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample.pptx, checker https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_deck.py
-- Excel (.xlsx), counts tables and small summaries with native charts: rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/excel.md, template https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-template.xlsx, sample https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample.xlsx, checker https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_xlsx.py
-- Markdown (.md), READMEs, reports and notes: rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/markdown.md, sample to copy https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample.md with its figure https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sample-figure-1.png, checker https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_md.py
-- HTML (.html), single-file reports that print to PDF: rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/html.md, template and sample in one file https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-report.html, checker https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_html.py
-- SOP (.docx), standard operating procedures in the house SOP structure: rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/sop.md, template https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sop-template.docx, sample https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-sop-sample.docx, checker https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_sop.py
+- Word (.docx): memos and reports with a cover band, rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/word.md
+- PowerPoint (.pptx): 16:9 decks in eight layouts, rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/powerpoint.md
+- Excel (.xlsx): counts tables and small summaries with native charts, rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/excel.md
+- Markdown (.md): READMEs, reports and notes, rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/markdown.md
+- HTML (.html): single-file reports that print to PDF, rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/html.md
+- SOP (.docx): standard operating procedures in the house SOP structure, rules https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/references/sop.md
 
-## Check a finished file
+## Maintainers
 
-Download the checker for the format and https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/prose.py into one folder, then run the checker on the file:
-
-    python check_docx.py visit-review.docx
-
-Each checker prints one PASS or FAIL line per check and exits 1 on any FAIL. Fix every FAIL and run it again. check_html.py also needs https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/assets/neuromine-report.html and https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/design/tokens.json at the same paths as in this repo, so run it from a clone. In a clone, https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/check_all.py runs every checker on the samples in assets/. https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/README.md says what each script checks.
-
-## Rebuild the templates
-
-The Word, PowerPoint, Excel and SOP templates and samples are built from https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/design/tokens.json and the logo, the same bytes on every run on one machine. Change the look in tokens.json or the build script, never in the built file. From a clone:
-
-    python scripts/build_word.py
-    python scripts/build_powerpoint.py
-    python scripts/build_excel.py
-    python scripts/build_markdown_figure.py
-    python scripts/build_sop.py
-
-Each writes to assets/, or to the folder given as its only argument. The scripts are https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/build_word.py, https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/build_powerpoint.py, https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/build_excel.py, https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/build_markdown_figure.py and https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/build_sop.py. They need Python 3.10 or later and install python-docx, python-pptx, openpyxl and matplotlib if they are missing.
+Run the checker for the format on the finished file; https://raw.githubusercontent.com/Neuromine-Data/brand-skill/main/scripts/README.md says which checker to use and how. The templates and samples are built from design/tokens.json by the build scripts in scripts/, so change the look there and never edit a built file by hand.
 
 ## Layout
 

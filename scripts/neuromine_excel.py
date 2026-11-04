@@ -100,10 +100,10 @@ def styles():
     right = Alignment(horizontal="right", vertical="center")
     p = STYLE_PREFIX
     return [
-        style(p + "Eyebrow", font(MONO_FONT, SIZE_CAPTION, CAPTION, bold=True), align=left),
+        style(p + "Eyebrow", font(BODY_FONT, SIZE_CAPTION, CAPTION, bold=True), align=left),
         style(p + "Title", font(HEAD_FONT, SIZE_TITLE, BRAND, bold=True), align=Alignment(horizontal="left", vertical="bottom")),
         style(p + "Subtitle", font(BODY_FONT, SIZE_SUBTITLE, TEXT_2), align=left),
-        style(p + "Date", font(MONO_FONT, SIZE_CAPTION, CAPTION), FMT_LONG_DATE, align=left),
+        style(p + "Date", font(BODY_FONT, SIZE_CAPTION, CAPTION), FMT_LONG_DATE, align=left),
         style(p + "Header", font(BODY_FONT, SIZE_BODY, WHITE, bold=True), fill=BRAND, align=Alignment(horizontal="left", vertical="center", wrap_text=True)),
         style(p + "Text", font(BODY_FONT, SIZE_BODY, TEXT_2), border=body_rule, align=left),
         style(p + "Text Wrap", font(BODY_FONT, SIZE_BODY, TEXT_2), border=body_rule, align=Alignment(horizontal="left", vertical="top", wrap_text=True)),
@@ -116,7 +116,7 @@ def styles():
         style(p + "Total Decimal", font(BODY_FONT, SIZE_BODY, INK, bold=True), FMT_DEC, border=total_rule, align=right),
         style(p + "Total Percent", font(BODY_FONT, SIZE_BODY, INK, bold=True), FMT_PCT, border=total_rule, align=right),
         style(p + "Table Title", font(HEAD_FONT, SIZE_BODY, INK, bold=True), align=left),
-        style(p + "Caption", font(MONO_FONT, SIZE_CAPTION, CAPTION), align=left),
+        style(p + "Caption", font(BODY_FONT, SIZE_CAPTION, CAPTION), align=left),
         style(p + "Note", font(BODY_FONT, SIZE_CAPTION, CAPTION), align=left),
     ]
 
@@ -148,7 +148,7 @@ def setup_sheet(ws, name, title, subtitle, when, landscape=False):
     ws.print_title_rows = f"{HEADER_ROW}:{HEADER_ROW}"
     for part, text, color in ((ws.oddHeader.left, MARK, CAPTION), (ws.oddHeader.right, "&A", CAPTION), (ws.oddFooter.right, "&P", PLACEHOLDER)):
         part.text = text
-        part.font = f"{MONO_FONT},Regular"
+        part.font = f"{BODY_FONT},Regular"
         part.size = SIZE_CAPTION
         part.color = color
 

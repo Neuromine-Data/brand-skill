@@ -44,7 +44,7 @@ Brand colors and font families are defined once as custom properties on `:root`;
 Fonts:
 
 - `--font-body`: "Helvetica Neue", Arial, sans-serif. Headings use it too, at weight 600.
-- `--font-mono`: "Courier New", monospace.
+- `--font-mono`: "Courier New", monospace, for `code` and `pre` only. The mark, header text, cover date, quote source, bar values and page number use `--font-body`.
 - Helvetica Neue is not on Windows or in most agent sandboxes, so a render there uses Arial. Do not change the stacks because of that, and never add a web font link.
 
 ## Light only
@@ -56,7 +56,7 @@ The report is light. Set `color-scheme: light` on `:root` and add the color-sche
 - Screen: body on `--page`, content in a `.page` column on `--surface`, about 50rem wide. Spacing in steps of 4, 6, 8, 12, 14, 16, 20 and 24px.
 - PDF route: Chrome or Edge, File > Print > Save as PDF, background graphics on, browser headers and footers off. "Print preview" in these rules means that renderer. wkhtmltopdf and similar tools do not draw margin-box page numbers.
 - `@page { size: letter portrait; margin: 1in; }`, matching brand.md page setup and the Word template.
-- Page numbers come from `@page` only: `@bottom-right { content: counter(page); }` in Courier New 9pt #6E7581, none on the first page (`@page :first`). There is no screen footer.
+- Page numbers come from `@page` only: `@bottom-right { content: counter(page); }` in the body stack ("Helvetica Neue", Arial, sans-serif) 9pt #6E7581, none on the first page (`@page :first`). There is no screen footer.
 - `print-color-adjust: exact` on body so fills print.
 - In `@media print`: hide `nav` and `.no-print`, drop the `.page` padding and width, make the cover fill page 1 with `break-after: page`.
 - Every h1 section starts a new page with its header block at the top: `.doc-header { break-before: page; break-after: avoid; }`.
@@ -69,11 +69,11 @@ The report is light. Set `color-scheme: light` on `:root` and add the color-sche
 
 - `<header class="doc-header">` right before each `h1`, with the mark at left and the section at right ("2. Counts by site", same number as the h1), a 1px `--rule` line below.
 - The mark is `<span class="mark">Neuromine</span>`: the program name in text, never the logo (there is no dark logo for white). It always reads "Neuromine".
-- Header text: Courier New 12px, `--caption`, sentence case.
+- Header text: `--font-body` 12px, `--caption`, sentence case.
 
 ## Cover
 
-`<section class="cover">`: a `.cover-band` across the top in `--brand`, about a quarter of the page high, with the white logo at its top left (50px high on screen, never under 38px, clear space of at least half its height) and the wordmark beside it: `<span class="wordmark">NEUROMINE</span>` after the `img`, both in a `.lockup`, 18px, 700, white, no letter spacing, 24px to the right of the logo (brand.md Wordmark). Below the band, left aligned: the eyebrow (two to four words, 11px, 700, uppercase, 0.3px letter spacing, `--caption`), the title (`.cover-title`, 600, 28px, `--brand`), the subtitle (`--text-2`) and the date at the bottom (`.cover-date`, Courier New, `--caption`, `4 November 2026` per brand.md). The logo goes on the band only, once.
+`<section class="cover">`: a `.cover-band` across the top in `--brand`, about a quarter of the page high, with the white logo at its top left (50px high on screen, never under 38px, clear space of at least half its height) and the wordmark beside it: `<span class="wordmark">NEUROMINE</span>` after the `img`, both in a `.lockup`, 18px, 700, white, no letter spacing, 24px to the right of the logo (brand.md Wordmark). Below the band, left aligned: the eyebrow (two to four words, 11px, 700, uppercase, 0.3px letter spacing, `--caption`), the title (`.cover-title`, 600, 28px, `--brand`), the subtitle (`--text-2`) and the date at the bottom (`.cover-date`, `--font-body` 13px, `--caption`, `4 November 2026` per brand.md). The logo goes on the band only, once.
 
 ## Headings
 
@@ -109,12 +109,12 @@ The report is light. Set `color-scheme: light` on `:root` and add the color-sche
 ## Callouts and quotes
 
 - Callout: `<div class="callout"><strong>Key point:</strong> ...</div>`. `--tint-1` fill, 3px `--brand` left border, 8px 12px padding, 8px radius, `--text`. Labels: Note, Key point, Warning, always bold. One callout per h1 section at most.
-- Quote: `<blockquote>` with the quote in `<p>` and the source in a `<footer>` (Courier New 13px, `--caption`). `--text-2`, indented both sides, no fill and no left bar, so it never looks like a callout.
+- Quote: `<blockquote>` with the quote in `<p>` and the source in a `<footer>` (`--font-body` 13px, `--caption`). `--text-2`, indented both sides, no fill and no left bar, so it never looks like a callout.
 
 ## Figures and charts
 
 - Every chart or image is a `<figure>` with a `<figcaption class="caption">` above it: "Figure 1. ...", numbered in order, 13px `--caption`. A source line (`<p class="source">Source: Release 8 index.</p>`) closes the figure.
-- Simple bar charts are pure CSS (see `.bar-chart` in the template): one `.bar` per row, width as a percent of the axis maximum. A single series is `--brand` (a plain `.bar`); several categories take classes `s1` to `s6` in brand order. The value label is a `.bar-value` span after the `.bar` inside `.bar-track`, just past the bar's end, in `--text-2`. Never text inside a bar: chart colors are for marks, not text.
+- Simple bar charts are pure CSS (see `.bar-chart` in the template): one `.bar` per row, width as a percent of the axis maximum. A single series is `--brand` (a plain `.bar`); several categories take classes `s1` to `s6` in brand order. The value label is a `.bar-value` span after the `.bar` inside `.bar-track`, just past the bar's end, in `--font-body` 12px `--text-2`. Never text inside a bar: chart colors are for marks, not text.
 - More complex charts are inline SVG (see Figure 2 in the template) in the same colors: axis and tick text in #6A7683, grid lines and baseline in #D9E1EA, few and light, Arial for SVG text.
 - Give a CSS chart `role="img"` and an `aria-label` that lists the data. Inline SVG needs `role="img"`, a `<title>` and a `<desc>` that lists the data.
 - Every chart needs a text or table equivalent nearby.

@@ -68,8 +68,8 @@ Title and Closing are brand blue #1F4FAE all over, like the cover page in brand.
 | Role | Font | Fallback |
 | --- | --- | --- |
 | Titles | Helvetica Neue bold (theme heading font) | Arial |
-| Body, tables, charts, captions | Helvetica Neue (theme body font) | Arial |
-| Footer, page number, date, command lines | Courier New | monospace |
+| Body, tables, charts, captions, eyebrow, date, footer, page number | Helvetica Neue (theme body font) | Arial |
+| Command lines only | Courier New | monospace |
 
 The theme names Helvetica Neue, so text set to the theme fonts picks it up. On a machine without it PowerPoint substitutes a font, most often Arial. Agent sandboxes rarely have Helvetica Neue, so a render you make yourself shows the fallback; do not change the theme fonts because of it. Never embed fonts.
 
@@ -85,7 +85,7 @@ The theme names Helvetica Neue, so text set to the theme fonts picks it up. On a
 | Body level 2, table text, chart labels, command lines | 16pt | Text 2 #374151; chart labels #6A7683 |
 | Eyebrow | 14pt bold, uppercase, 2pt letter spacing | Tint 3 #C4D9FF |
 | Caption, date | 14pt | Caption #4B5563 (Tint 3 on blue) |
-| Footer, page number | Courier New 12pt | Caption #4B5563, Placeholder #6E7581 |
+| Footer, page number | Helvetica Neue 12pt | Caption #4B5563, Placeholder #6E7581 |
 
 These come from the master and layouts; do not set them by hand. Only the sizes 54, 40, 22, 16, 14 and 12 are used.
 
@@ -104,7 +104,7 @@ At 40pt a title takes about 35 characters per line across the 11.5 in title box 
 
 ## Footer
 
-Content layouts show a footer row 6.88 in from the top, below a 1pt Rule #E5E7EB line at 6.78 in: the deck name at left in the footer placeholder (idx 11), for example "Release 8 summary", and the slide number at right (idx 12, a slide number field). python-pptx does not copy the footer and slide number placeholders onto new slides. Call `add_hf(slide, {"ftr", "sldNum"}, values)` on each content slide. The date shows only on the Title slide.
+Content layouts show a footer row 6.88 in from the top, below a 1pt Rule #E5E7EB line at 6.78 in: the deck name at left in the footer placeholder (idx 11), for example "Release 8 summary", and the slide number at right (idx 12, a slide number field), both in the body family Helvetica Neue 12pt. python-pptx does not copy the footer and slide number placeholders onto new slides. Call `add_hf(slide, {"ftr", "sldNum"}, values)` on each content slide. The date shows only on the Title slide.
 
 ## Bullets
 

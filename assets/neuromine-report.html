@@ -73,7 +73,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 12px;
   color: var(--caption);
   padding-bottom: 8px;
@@ -82,7 +82,7 @@ body {
   break-before: page;
   break-after: avoid;
 }
-.mark { font-family: var(--font-mono); font-weight: 400; color: var(--caption); }
+.mark { font-family: var(--font-body); font-weight: 400; color: var(--caption); }
 .cover {
   min-height: 70vh;
   display: flex;
@@ -115,7 +115,7 @@ body {
   margin: 8px 0 6px;
 }
 .cover-subtitle { color: var(--text-2); margin: 0; }
-.cover-date { margin-top: auto; padding-top: 24px; font-family: var(--font-mono); font-size: 13px; color: var(--caption); }
+.cover-date { margin-top: auto; padding-top: 24px; font-family: var(--font-body); font-size: 13px; color: var(--caption); }
 .caption { font-size: 13px; color: var(--caption); }
 h1, h2, h3 {
   font-family: var(--font-body);
@@ -203,7 +203,7 @@ blockquote {
   break-inside: avoid;
 }
 blockquote p { margin: 0 0 6px; }
-blockquote footer { font-family: var(--font-mono); font-size: 13px; color: var(--caption); }
+blockquote footer { font-family: var(--font-body); font-size: 13px; color: var(--caption); }
 figure { margin: 20px 0; break-inside: avoid; }
 figcaption.caption { margin-bottom: 8px; }
 .source { font-size: 13px; color: var(--caption); margin: 8px 0 0; }
@@ -213,7 +213,7 @@ figure svg { display: block; width: 100%; height: auto; }
 .bar-label { text-align: right; font-size: 13px; color: var(--text-2); padding-right: 4px; }
 .bar-track { height: 20px; border-left: 1px solid var(--border); display: flex; align-items: center; }
 .bar { height: 100%; flex: none; background: var(--brand); }
-.bar-value { flex: none; margin-left: 6px; color: var(--text-2); font-family: var(--font-mono); font-size: 12px; }
+.bar-value { flex: none; margin-left: 6px; color: var(--text-2); font-family: var(--font-body); font-size: 12px; }
 .bar.s1 { background: var(--series-1); }
 .bar.s2 { background: var(--series-2); }
 .bar.s3 { background: var(--series-3); }
@@ -227,7 +227,7 @@ figure svg { display: block; width: 100%; height: auto; }
   margin: 1in;
   @bottom-right {
     content: counter(page);
-    font-family: "Courier New", monospace;
+    font-family: "Helvetica Neue", Arial, sans-serif;
     font-size: 9pt;
     color: #6E7581;
   }

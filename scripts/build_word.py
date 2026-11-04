@@ -44,7 +44,6 @@ C = {k: v.upper() for k, v in TOKENS["color"].items()}
 PT = TOKENS["size"]["document_pt"]
 HEAD_FONT = TOKENS["font"]["heading"]
 BODY_FONT = TOKENS["font"]["body"]
-MONO_FONT = TOKENS["font"]["mono"]
 FALLBACK = TOKENS["font"]["fallback"]
 CHART = [C[f"chart_{i}"] for i in range(1, 7)]
 MARK = "Neuromine"
@@ -54,13 +53,23 @@ PAGE_W = 12240
 PAGE_H = 15840
 MARGIN = 1440
 TEXT_W = PAGE_W - 2 * MARGIN
-BAND_IN = (8.5, 2.75)
+BAND_IN = (8.5, 1.1)
 BAND_DPI = 200
-LOGO_IN = 0.75
+LOGO_IN = 0.6
+LOGO_LEFT_IN = 1.0
+PROGRAM_PT = 11
+PROGRAM_SPACING = 10
+PROGRAM_W = 5040
+PROGRAM_LINE = 300
+PROGRAM_Y = round(BAND_IN[1] * 1440 / 2 - PROGRAM_LINE / 2)
+PROGRAM_MAX = 20
+EYEBROW_BEFORE = 720
 
 BULLET_NUM = 90
 NUMBER_NUM = 91
 BULLET_CHAR = chr(0xF0B7)
+
+SAMPLE_PROGRAM = "ALS TDI"
 
 FIXED_DATE = datetime(2026, 1, 1, 0, 0, 0)
 ZIP_DATE = (2026, 1, 1, 0, 0, 0)
@@ -169,17 +178,21 @@ def build_styles(doc):
               ppr(before=0, after=0, line=276, ind={"right": TITLE_RIGHT_IND}) + rpr(BODY_FONT, PT["heading"], C["text_2"]),
               ui=11)
     put_style(styles_el, "paragraph", "CoverEyebrow", "Cover Eyebrow",
-              ppr(before=3600, after=160) + rpr(MONO_FONT, PT["caption"], C["caption"], bold=True, caps=True, spacing=10),
+              ppr(before=EYEBROW_BEFORE, after=160) + rpr(BODY_FONT, PT["caption"], C["caption"], bold=True, caps=True, spacing=10),
               nxt="Title", custom=True)
     put_style(styles_el, "paragraph", "CoverDate", "Cover Date",
-              ppr(before=0, after=0, line=240) + rpr(MONO_FONT, PT["caption"], C["caption"]),
+              ppr(before=0, after=0, line=240) + rpr(BODY_FONT, PT["caption"], C["caption"]),
+              custom=True)
+    put_style(styles_el, "paragraph", "CoverProgram", "Cover Program",
+              f'<w:pPr><w:spacing w:before="0" w:after="0" w:line="{PROGRAM_LINE}" w:lineRule="exact"/><w:jc w:val="right"/></w:pPr>'
+              + rpr(BODY_FONT, PROGRAM_PT, C["tint_3"], bold=True, caps=True, spacing=PROGRAM_SPACING),
               custom=True)
     put_style(styles_el, "paragraph", "Header", "header",
               ppr(border=("bottom", 6, 4, C["rule"]), tabs=[("right", TEXT_W)], before=0, after=0, line=240)
-              + rpr(MONO_FONT, PT["caption"], C["caption"]))
+              + rpr(BODY_FONT, PT["caption"], C["caption"]))
     put_style(styles_el, "paragraph", "Footer", "footer",
               ppr(border=("top", 6, 4, C["rule"]), before=0, after=0, line=240, jc="right")
-              + rpr(MONO_FONT, PT["caption"], C["placeholder"]))
+              + rpr(BODY_FONT, PT["caption"], C["placeholder"]))
     put_style(styles_el, "paragraph", "ListBullet", "List Bullet", ppr(num=BULLET_NUM, after=90), ui=99)
     put_style(styles_el, "paragraph", "ListNumber", "List Number", ppr(num=NUMBER_NUM, after=90), ui=99)
     put_style(styles_el, "paragraph", "Quote", "Quote",
@@ -190,7 +203,7 @@ def build_styles(doc):
               + rpr(BODY_FONT, PT["body"], C["text"]),
               nxt="Normal", custom=True)
     put_style(styles_el, "paragraph", "Caption", "caption",
-              ppr(before=80, after=200, line=240) + rpr(MONO_FONT, PT["caption"], C["caption"]),
+              ppr(before=80, after=200, line=240) + rpr(BODY_FONT, PT["caption"], C["caption"]),
               nxt="Normal", ui=35)
     edge = f'w:val="single" w:sz="6" w:space="0" w:color="{C["table_border"]}"'
     put_style(styles_el, "table", "NeuromineTable", "Neuromine Table",
@@ -277,12 +290,13 @@ def band_png():
     band = Image.new("RGB", (w, h), "#" + C["brand"])
     side = int(LOGO_IN * BAND_DPI)
     logo = Image.open(LOGO).convert("RGBA").resize((side, side), Image.LANCZOS)
-    band.paste(logo, (BAND_DPI, BAND_DPI // 2), logo)
+    top = (h - side) // 2
+    band.paste(logo, (round(LOGO_LEFT_IN * BAND_DPI), top), logo)
     face = font_manager.FontProperties(family=[WORDMARK["family"], WORDMARK["fallback"]], weight=WORDMARK["weight"])
     font = ImageFont.truetype(font_manager.findfont(face, fallback_to_default=False), round(WORDMARK["document_pt"] / 72 * BAND_DPI))
-    x = BAND_DPI + side + round(WORDMARK["gap_ratio"] * side)
+    x = round(LOGO_LEFT_IN * BAND_DPI) + side + round(WORDMARK["gap_ratio"] * side)
     cap = -font.getbbox(WORDMARK["text"], anchor="ls")[1]
-    ImageDraw.Draw(band).text((x, BAND_DPI // 2 + (side + cap) // 2), WORDMARK["text"], font=font, fill="#" + C[WORDMARK["color"]], anchor="ls")
+    ImageDraw.Draw(band).text((x, top + (side + cap) // 2), WORDMARK["text"], font=font, fill="#" + C[WORDMARK["color"]], anchor="ls")
     buf = io.BytesIO()
     band.save(buf, format="PNG")
     buf.seek(0)
@@ -319,6 +333,29 @@ def clear_paragraph(paragraph):
             paragraph._p.remove(child)
 
 
+def header_mark(program):
+    return f"{MARK} | {program}" if program else MARK
+
+
+def add_program(header):
+    p = header.add_paragraph(style="Cover Program")
+    p_pr = p._p.get_or_add_pPr()
+    p_pr.insert(1, parse_xml(
+        f'<w:framePr {nsdecls("w")} w:w="{PROGRAM_W}" w:h="{PROGRAM_LINE}" w:hRule="exact" w:wrap="around" '
+        f'w:hAnchor="margin" w:vAnchor="page" w:xAlign="right" w:y="{PROGRAM_Y}"/>'
+    ))
+    p.add_run("")
+    return p
+
+
+def set_program(doc, program):
+    if len(program) > PROGRAM_MAX:
+        raise ValueError(f"program name over {PROGRAM_MAX} characters: {program}")
+    sec = doc.sections[0]
+    sec.first_page_header.paragraphs[1].runs[0].text = program
+    sec.header.paragraphs[0].runs[0].text = header_mark(program)
+
+
 def set_header_footer(doc, section_text, date_text):
     sec = doc.sections[0]
     sec.different_first_page_header_footer = True
@@ -337,6 +374,7 @@ def set_header_footer(doc, section_text, date_text):
     first_head.style = doc.styles["Normal"]
     first_head.paragraph_format.space_after = 0
     anchor_behind(add_band(first_head))
+    add_program(sec.first_page_header)
     first_foot = sec.first_page_footer.paragraphs[0]
     first_foot.style = doc.styles["Cover Date"]
     first_foot.text = date_text
@@ -476,6 +514,7 @@ def build_sample(template, path, figure):
     clear_body(doc)
     doc.sections[0].first_page_footer.paragraphs[0].text = "November 2026"
     set_section_text(doc, "1. Summary")
+    set_program(doc, SAMPLE_PROGRAM)
     doc.add_paragraph("Sample report", style="Cover Eyebrow")
     doc.add_paragraph("Visit review", style="Title")
     doc.add_paragraph("Every recipe in the Word template, filled with example numbers", style="Subtitle")
@@ -523,6 +562,8 @@ def main():
     build_sample(template, sample, figure)
     for path in (template, sample, figure):
         print(f"wrote {path.name}")
+    pixel = Image.open(band_png()).convert("RGB").getpixel((10, 10))
+    print(f"band pixel {pixel}, brand #{C['brand']}")
     return 0
 
 

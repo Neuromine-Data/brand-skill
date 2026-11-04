@@ -20,6 +20,7 @@ STYLES = [P + n for n in (
 )]
 NUMBER_STYLES = {P + n for n in ("Integer", "Decimal", "Percent", "Date Cell", "Total Integer", "Total Decimal", "Total Percent")}
 TOTAL_STYLES = {P + n for n in ("Total Label", "Total Integer", "Total Decimal", "Total Percent")}
+LABEL_STYLES = {P + n for n in ("Eyebrow", "Date", "Caption")}
 STOP_STYLES = {P + "Header", P + "Caption", P + "Table Title", P + "Note"} | TOTAL_STYLES
 BRAND = {
     "1F4FAE",
@@ -219,6 +220,27 @@ def check_setup(wb):
     return result(bad, f"every sheet has the freeze pane, gridlines off, print titles row 7, one page wide and '{MARK}' in the print header")
 
 
+def check_label_fonts(wb):
+    bad = []
+    named = {s.name: s for s in wb._named_styles}
+    for n in LABEL_STYLES:
+        st = named.get(n)
+        if st is not None and "courier" in (st.font.name or "").lower():
+            bad.append(f"style {n}")
+    for ws in wb.worksheets:
+        for h, kind in ((ws.oddHeader, "header"), (ws.oddFooter, "footer")):
+            for side, part in (("left", h.left), ("center", h.center), ("right", h.right)):
+                if "courier" in (part.font or "").lower():
+                    bad.append(f"{ws.title} print {kind} {side}")
+        for row in ws.iter_rows():
+            for c in row:
+                if c.style in LABEL_STYLES and c.value is not None and "courier" in (c.font.name or "").lower():
+                    bad.append(f"{ws.title}!{c.coordinate}")
+    if bad:
+        return False, "Courier New in " + short(bad) + "; labels and page furniture use the body family"
+    return True, "no Eyebrow, Date or Caption style or cell and no print header or footer names Courier New"
+
+
 def anchor_cell(chart):
     a = chart.anchor
     m = getattr(a, "_from", None)
@@ -392,6 +414,7 @@ def main():
         ("totals", lambda: check_totals(wb)),
         ("merged-hidden", lambda: check_merged_hidden(wb)),
         ("sheet-setup", lambda: check_setup(wb)),
+        ("label-fonts", lambda: check_label_fonts(wb)),
         ("table-titles", lambda: check_table_titles(wb)),
         ("captions", lambda: check_captions(wb)),
         ("charts", lambda: check_charts(wb)),

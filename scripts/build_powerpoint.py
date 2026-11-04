@@ -48,7 +48,6 @@ PT = TOKENS["size"]["slide_pt"]
 SIZE_IN = TOKENS["size"]["slide_in"]
 HEAD_FONT = TOKENS["font"]["heading"]
 BODY_FONT = TOKENS["font"]["body"]
-MONO_FONT = TOKENS["font"]["mono"]
 EYEBROW_SPC = TOKENS["font"]["eyebrow_tracking_slide_pt"] * 100
 CHART = [C[f"chart_{i}"] for i in range(1, 7)]
 
@@ -182,9 +181,9 @@ def tree(shapes):
 FOOT_Y = inch(6.88)
 FOOT_H = inch(0.32)
 NUM_W = inch(1.5)
-FOOT_LST = plain_levels(PT["page_number"], C["caption"], MONO_FONT)
-NUM_LST = plain_levels(PT["page_number"], C["placeholder"], MONO_FONT, algn="r")
-COVER_LST = plain_levels(PT["eyebrow"], C["tint_3"], MONO_FONT)
+FOOT_LST = plain_levels(PT["page_number"], C["caption"], "minor")
+NUM_LST = plain_levels(PT["page_number"], C["placeholder"], "minor", algn="r")
+COVER_LST = plain_levels(PT["eyebrow"], C["tint_3"], "minor")
 
 TITLE_BOX = (LEFT, inch(0.45), TEXT_W, inch(1.35))
 BODY_BOX = (LEFT, inch(2.05), TEXT_W, inch(4.45))
@@ -525,7 +524,7 @@ def build_sample(template, path):
         ["Subline and first level text", "Helvetica Neue", str(PT["subline"])],
         ["Second level, tables and chart labels", "Helvetica Neue", str(PT["command"])],
         ["Eyebrow and captions", "Helvetica Neue", str(PT["eyebrow"])],
-        ["Footer and page number", "Courier New", str(PT["page_number"])],
+        ["Footer and page number", "Helvetica Neue", str(PT["page_number"])],
     ])
 
     s = add(prs, "Two Content", "Blue carries the brand on every slide", foot)

@@ -26,6 +26,7 @@ PREFIXES = ("AALS-", "ALSTDI-", "NEUROMINE-")
 SOP_ID_RE = re.compile(r"^(" + "|".join(PREFIXES) + r")SOP-(NNN|[0-9]{3})-V[0-9]+$")
 FILE_RE = re.compile(r"^(" + "|".join(PREFIXES) + r")SOP-(NNN|[0-9]{3})-V[0-9]+\. \S.*\.docx$")
 SAMPLE_NAMES = ("neuromine-sop-sample.docx",)
+LABEL_STYLES = ("Header", "Footer", "Caption", "CoverEyebrow", "CoverDate")
 GUIDE = "Guide:"
 WORD_MIN = 700
 WORD_BUDGET = 1000
@@ -251,9 +252,28 @@ def footer_id(doc):
 
 def check_sop_id(doc):
     sop_id = footer_id(doc)
+    sec = doc.sections[0]
+    if sec.different_first_page_header_footer:
+        first = next((p.text.split("	")[0].strip() for p in sec.first_page_footer.paragraphs if p.text.strip()), "")
+        if first != sop_id:
+            return False, f"page 1 footer SOP id '{first}' differs from the footer SOP id '{sop_id}'"
     if not SOP_ID_RE.match(sop_id):
         return False, f"footer SOP id '{sop_id}' is not PREFIX-SOP-NNN-VN with PREFIX one of {', '.join(PREFIXES)}"
     return True, f"footer SOP id {sop_id}"
+
+
+def check_label_fonts(doc):
+    bad = []
+    for style in doc.styles.element.findall(qn("w:style")):
+        sid = style.get(qn("w:styleId"))
+        if sid not in LABEL_STYLES:
+            continue
+        for fonts in style.iter(qn("w:rFonts")):
+            if any("courier" in (v or "").lower() for v in fonts.attrib.values()):
+                bad.append(sid)
+    if bad:
+        return False, "Courier New in label styles " + ", ".join(sorted(set(bad))) + "; labels use the body family"
+    return True, "no Header, Footer, Caption, Cover Eyebrow or Cover Date style names Courier New"
 
 
 def check_name(doc, path):
@@ -329,6 +349,7 @@ def main():
         ("staff-names", lambda: check_names(doc)),
         ("identifiers", lambda: check_identifiers(doc)),
         ("ascii", lambda: check_ascii(doc)),
+        ("label-fonts", lambda: check_label_fonts(doc)),
     ]
     failed = False
     for name, fn in checks:

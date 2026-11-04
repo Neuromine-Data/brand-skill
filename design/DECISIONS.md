@@ -66,7 +66,7 @@ design/README.md is now a short pointer. tokens.json stays and holds every color
 |---|---|
 | Sequential chart series: #EEF4FF, #DCE8FF, #C4D9FF, #4070D9, #1F4FAE, #163D8C (tokens chart_seq_1 to 6) | Ordered data needs one hue light to dark. Built from the brand blue tints and steps, so no new color. |
 | Diverging chart series: #163D8C, #1F4FAE, #C4D9FF, #F8D7DA, #DC3545, #721C24 (tokens chart_div_1 to 6) | Data above and below a midpoint needs two hues. Brand blue against the error reds, light in the middle; blue and red stay apart for most color vision types. It is the one chart use of a status color. |
-| Courier New for labels and page furniture (header and footer text, page numbers) | The skill shape gives page furniture a mono face. Courier New was already the brand mono. |
+| Courier New for labels and page furniture (header and footer text, page numbers) | The skill shape gives page furniture a mono face. Courier New was already the brand mono. Replaced 2026-11-04 by the body family, see the last two sections. |
 | Header and footer: program name in text at left, section at right, page number at right in the footer | There is no dark logo, so white pages carry the name in text. |
 | Document cover: brand blue band at the top with the white logo | The logo may sit only on brand blue; the band gives it a place on a white page. |
 | Callout: Tint 1 fill with a 3px brand blue left border | Matches the flat look and keeps status boxes for status only. |
@@ -83,7 +83,25 @@ The skill moved into its own repo, Neuromine-Data/brand-skill, and is named neur
 | What | From | Note |
 |---|---|---|
 | Wordmark: NEUROMINE beside the logo, 700, all capitals as typed, no letter spacing, white on brand blue | Variant Tool variant_reports.py: SITE_TITLE "NEUROMINE" in the header constants, the header CSS (`#header .app-header .title`, `a.app-logo + a.title` font-weight 700, `.title` 19px !important, `img.app-logo` 54px !important) and docs/design/tokens.css `--vr-font-head` | The header sets it in Roboto, then Helvetica Neue, then Arial; here it is Helvetica Neue with Arial, as for every heading, since Roboto is not on every device. No text-transform and no letter-spacing is set on the title, so the capitals are typed and the spacing is 0. |
-| Wordmark size, 0.35 of the logo height | The same header: 19px text beside a 54px logo (the !important rules win over the 22px and 50px rules further down) | 19pt beside the 0.75in slide and document logo, 18px beside the 50px HTML logo. |
+| Wordmark size, 0.35 of the logo height | The same header: 19px text beside a 54px logo (the !important rules win over the 22px and 50px rules further down) | 19pt beside the 0.75in slide logo, 18px beside the 50px HTML logo; 17pt beside the 0.6in logo on the slim document band (Cover band and labels below). |
 | Wordmark gap, half the logo height | The clear space rule in brand.md | The Variant Tool gap comes from the page template, not from its CSS, so the clear space value is used. |
 | Wordmark places: title and closing slides, the Word cover band, the HTML cover band | STYLE.md section 1 and Responsive header navigation: the logo and the NEUROMINE site title always sit together | Only next to the logo. |
 | Names: Neuromine Table and the other style names, the Neuromine theme, the eyebrow NEUROMINE, the header Neuromine, the file author Neuromine data team | The repo move | Answer ALS and ALS TDI stay named where a rule lists the programs the brand serves. |
+
+## Cover band and labels, 2026-11-04
+
+Chosen by the operator from a mockup of four band options and three label fonts, after reviewing two release notes and an SOP made with the skill.
+
+| What | Chosen | Why |
+|---|---|---|
+| Cover band, option D | A slim 8.5 by 1.1in #1F4FAE band: the 0.6in white logo on the 1in margin, the NEUROMINE wordmark 17pt beside it, and the program name (Answer ALS or ALS TDI) at the right on the right margin in Tint 3 #C4D9FF, bold, uppercase, 11pt, a little letter spacing | The tall band was a big empty block with a small logo. The program name says which program the Neuromine resource is for; it is text, so one value sets it, and it is blank for a Neuromine-only document. |
+| Label font, option 1 | The body family, Helvetica Neue with Arial, for the eyebrow, captions, cover date, header and footer, 9pt; the eyebrow stays bold uppercase with its letter spacing | Courier New on labels was rejected. Courier New stays for code and commands only, in every format; the PowerPoint, Excel, HTML and Markdown formats follow in their own change. |
+| Header, Neuromine first | "Neuromine | " and the program at left ("Neuromine" alone for a Neuromine-only document), the section or "Standard Operating Procedure" at right | Every document is a Neuromine resource for a program; a header with the program alone hid that. |
+| SOP band | The same band on page 1 of an SOP, with the header line under it | Replaces the earlier rule of no band and no logo in an SOP. |
+
+## Courier New for code only, 2026-11-04
+
+| What | Chosen | Why |
+|---|---|---|
+| Labels in PowerPoint, Excel and HTML | The body family for the footer, page number, date, eyebrow, caption, header text, quote source and bar values, as in Word | Label font option 1 holds in every format. |
+| tokens.json mono and web_mono_stack | Kept, for code and commands only: HTML code and pre, a command line on a slide | Code still needs a fixed width face; no label or page furniture takes it. |

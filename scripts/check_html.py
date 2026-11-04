@@ -24,6 +24,9 @@ BARE_AMP_RE = re.compile(r"&(?![A-Za-z][A-Za-z0-9]*;|#[0-9]+;|#[xX][0-9a-fA-F]+;
 LABELS = ("Note:", "Key point:", "Warning:")
 PROSE_SKIP = {"head", "script", "style", "pre", "code", "kbd", "samp", "svg"}
 LETTER_RE = re.compile(r"[A-Za-z]{2,}")
+CSS_RULE_RE = re.compile(r"([^{};]+)\{([^{}]*)\}")
+LABEL_SEL_RE = re.compile(r"\.mark\b|\.cover-date\b|\.doc-header\b|blockquote footer\b|\.bar-value\b|^@(top|bottom)-")
+MONO_RE = re.compile(r"--font-mono|courier|monospace", re.I)
 
 
 class El:
@@ -260,6 +263,17 @@ def check_mark(doc):
     return bad, f"{len(marks)} marks read {MARK}"
 
 
+def check_label_fonts(doc):
+    bad = []
+    for st in doc.find("style"):
+        css = st.text()
+        for m in CSS_RULE_RE.finditer(css):
+            sel = " ".join(m.group(1).split())
+            if any(LABEL_SEL_RE.search(part.strip()) for part in sel.split(",")) and MONO_RE.search(m.group(2)):
+                bad.append(f"line {st.line + css.count(chr(10), 0, m.end(1))}: {sel} uses the mono font; labels use var(--font-body)")
+    return bad, "the mark, header, cover date, quote source, bar values and page number use the body font"
+
+
 def check_headings(doc):
     bad = []
     prev = 0
@@ -447,6 +461,7 @@ CHECKS = [
     ("style-attr", check_style_attr),
     ("brand-hex", check_hex),
     ("mark", check_mark),
+    ("label-fonts", check_label_fonts),
     ("headings", check_headings),
     ("no-footer", check_footer),
     ("captions", check_captions),

@@ -47,7 +47,9 @@ a.save(wb, "neuromine-visits-by-site.xlsx")
 | --- | --- | --- |
 | Title, table title | Helvetica Neue bold | Arial |
 | Body, table cells, source lines | Helvetica Neue 11pt | Arial |
-| Eyebrow, date, captions, print header and footer | Courier New | none needed |
+| Eyebrow, date, captions, print header and footer | Helvetica Neue 9pt | Arial |
+
+Labels and page furniture use the body family. Courier New is not used in a workbook, which holds no code or commands.
 
 Excel has no per-cell fallback list. The styles name Helvetica Neue with the Swiss font family, so Excel on a machine without it (most Windows machines) shows Arial or its nearest sans serif. Do not change the fonts in the template because a render you made yourself shows Arial. Never embed fonts. The theme fonts are Helvetica Neue for headings and body.
 
@@ -59,10 +61,10 @@ Use only these cell styles. They show under Home > Cell Styles; openpyxl takes t
 
 | Use | Style | Look |
 | --- | --- | --- |
-| Eyebrow (A1) | Neuromine Eyebrow | Courier New bold 9pt, #4B5563 |
+| Eyebrow (A1) | Neuromine Eyebrow | Helvetica Neue bold 9pt, #4B5563 |
 | Sheet title (A2) | Neuromine Title | Helvetica Neue bold 20pt, #1F4FAE |
 | Subtitle (A3) | Neuromine Subtitle | Helvetica Neue 14pt, #374151 |
-| Date (A4) | Neuromine Date | Courier New 9pt, #4B5563, `d mmmm yyyy` |
+| Date (A4) | Neuromine Date | Helvetica Neue 9pt, #4B5563, `d mmmm yyyy` |
 | Table title (row above the header) | Neuromine Table Title | Helvetica Neue bold 11pt, #1A2332, left, no border |
 | Table header row | Neuromine Header | Helvetica Neue bold 11pt, white #FFFFFF on #1F4FAE fill, left, wrap on |
 | Text cells | Neuromine Text | Helvetica Neue 11pt, #374151, left, thin #DFE3EB rule below |
@@ -74,7 +76,7 @@ Use only these cell styles. They show under Home > Cell Styles; openpyxl takes t
 | Whole number total | Neuromine Total Integer | as Neuromine Total Label, right, `#,##0` |
 | Decimal total | Neuromine Total Decimal | as Neuromine Total Label, right, `#,##0.0` |
 | Percent total | Neuromine Total Percent | as Neuromine Total Label, right, `0.0%` |
-| Table or chart label | Neuromine Caption | Courier New 9pt, #4B5563 |
+| Table or chart label | Neuromine Caption | Helvetica Neue 9pt, #4B5563 |
 | Source or note line under a caption | Neuromine Note | Helvetica Neue 9pt, #4B5563 |
 | Dates in a table | Neuromine Date Cell | as Neuromine Text, right, `yyyy-mm-dd` |
 
@@ -125,7 +127,7 @@ A total row puts its label in Neuromine Total Label and each total in the Total 
 
 ## Print setup
 
-Portrait, US Letter, 1 inch margins, fit to one page wide. Row 7, the header row, repeats on each printed page. Print header: "Neuromine" left and the sheet name right, Courier New 9pt #4B5563; footer: page number right, Courier New 9pt #6E7581. The template and `new_sheet` set all of this.
+Portrait, US Letter, 1 inch margins, fit to one page wide. Row 7, the header row, repeats on each printed page. Print header: "Neuromine" left and the sheet name right, Helvetica Neue 9pt #4B5563; footer: page number right, Helvetica Neue 9pt #6E7581. The template and `new_sheet` set all of this.
 
 ## Sheets
 

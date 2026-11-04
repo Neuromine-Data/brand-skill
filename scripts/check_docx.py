@@ -28,6 +28,7 @@ TITLE_CHARS = 13
 WORD_SPLIT_RE = re.compile(r"[\s-]+")
 PLACEHOLDER_DATE = "month year"
 PLACEHOLDER_SECTION = "1. Section"
+LABEL_STYLES = ("Header", "Footer", "Caption", "CoverEyebrow", "CoverDate")
 
 
 def para_style(p):
@@ -186,6 +187,29 @@ def check_numbers(doc):
     return True, "number cells and the header cells over them are right aligned"
 
 
+def check_label_fonts(doc):
+    bad = []
+    for style in doc.styles.element.findall(qn("w:style")):
+        sid = style.get(qn("w:styleId"))
+        if sid not in LABEL_STYLES:
+            continue
+        for fonts in style.iter(qn("w:rFonts")):
+            if any("courier" in (v or "").lower() for v in fonts.attrib.values()):
+                bad.append(sid)
+    if bad:
+        return False, "Courier New in label styles " + ", ".join(sorted(set(bad))) + "; labels use the body family"
+    return True, "no Header, Footer, Caption, Cover Eyebrow or Cover Date style names Courier New"
+
+
+def check_band(doc):
+    sec = doc.sections[0]
+    if not sec.different_first_page_header_footer:
+        return False, "different first page is off, so there is no cover header"
+    if not sec.first_page_header._element.xpath(".//pic:pic"):
+        return False, "the first-page header has no band picture"
+    return True, "the first-page header holds the band picture"
+
+
 def check_name(path):
     if " " in path.name:
         return False, f"file name '{path.name}' has spaces"
@@ -270,6 +294,8 @@ def main():
         ("table-header-row", lambda: check_tbl_header(doc)),
         ("numbers-right", lambda: check_numbers(doc)),
         ("file-name", lambda: check_name(path)),
+        ("label-fonts", lambda: check_label_fonts(doc)),
+        ("cover-band", lambda: check_band(doc)),
         ("placeholders", lambda: check_placeholders(doc)),
     ]
     failed = False

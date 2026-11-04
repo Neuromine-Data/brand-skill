@@ -25,6 +25,7 @@ NUMBER_RE = re.compile(r"^[+-]?\$?[+-]?\d[\d,]*(\.\d+)?\s?(%|pts|pt)?$")
 LETTER_RE = re.compile(r"[A-Za-z]")
 EFFECT_TAGS = ("a:gradFill", "a:outerShdw", "a:innerShdw", "a:prstShdw", "a:reflection", "a:glow", "a:softEdge")
 EXEMPT_PH = (PP_PLACEHOLDER.FOOTER, PP_PLACEHOLDER.SLIDE_NUMBER, PP_PLACEHOLDER.DATE)
+EYEBROW_IDX = 15
 MAX_ROWS = 7
 MAX_COLS = 5
 MAX_BULLETS = 6
@@ -87,6 +88,22 @@ def check_footer(prs):
     if bad:
         return False, "missing: " + "; ".join(bad)
     return True, "every content slide has a footer and slide number"
+
+
+def check_label_fonts(prs):
+    bad = []
+    owners = [("master", prs.slide_master)] + [(f"layout '{l.name}'", l) for l in prs.slide_layouts]
+    owners += [(f"slide {i}", s) for i, s in enumerate(prs.slides, 1)]
+    for where, owner in owners:
+        for shape in owner.placeholders:
+            pf = shape.placeholder_format
+            if pf.type not in EXEMPT_PH and pf.idx != EYEBROW_IDX:
+                continue
+            if any("courier" in (el.get("typeface") or "").lower() for el in shape._element.iter()):
+                bad.append(f"{where} {shape.name}")
+    if bad:
+        return False, "Courier New in " + "; ".join(bad[:5]) + "; the footer, page number, date and eyebrow use the body family"
+    return True, "no footer, page number, date or eyebrow placeholder names Courier New"
 
 
 def check_direct(prs):
@@ -344,6 +361,7 @@ def main():
         ("layouts", lambda: check_layouts(prs)),
         ("first-last", lambda: check_ends(prs)),
         ("footer", lambda: check_footer(prs)),
+        ("label-fonts", lambda: check_label_fonts(prs)),
         ("direct-format", lambda: check_direct(prs)),
         ("tables", lambda: check_tables(prs)),
         ("bullets", lambda: check_bullets(prs)),

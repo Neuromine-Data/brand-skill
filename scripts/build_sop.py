@@ -50,7 +50,7 @@ def build_sop_styles(doc):
                  level_ppr(2, after=90), nxt="SOPDetail", custom=True)
     bw.put_style(styles_el, "paragraph", "Footer", "footer",
                  bw.ppr(border=("top", 6, 4, C["rule"]), tabs=[("right", bw.TEXT_W)], before=0, after=0, line=240)
-                 + bw.rpr(bw.MONO_FONT, PT["caption"], C["placeholder"]))
+                 + bw.rpr(bw.BODY_FONT, PT["caption"], C["placeholder"]))
 
 
 def build_sop_numbering(doc):
@@ -79,22 +79,52 @@ def build_sop_numbering(doc):
     ))
 
 
-def set_sop_header_footer(doc, sop_id):
+HEAD_BELOW_BAND = 792
+
+
+def sop_head(paragraph, doc, program):
+    bw.clear_paragraph(paragraph)
+    paragraph.style = doc.styles["Header"]
+    paragraph.add_run(bw.header_mark(program))
+    paragraph.add_run("\t")
+    paragraph.add_run("Standard Operating Procedure")
+
+
+def sop_foot(paragraph, doc, sop_id):
+    bw.clear_paragraph(paragraph)
+    paragraph.style = doc.styles["Footer"]
+    paragraph.add_run(sop_id)
+    paragraph.add_run("\t")
+    paragraph.add_run("Page ")
+    paragraph._p.append(bw.field("PAGE \\* MERGEFORMAT", "1"))
+
+
+def set_sop_header_footer(doc, sop_id, program=""):
     sec = doc.sections[0]
-    sec.different_first_page_header_footer = False
-    head = sec.header.paragraphs[0]
-    bw.clear_paragraph(head)
-    head.style = doc.styles["Header"]
-    head.add_run(bw.MARK)
-    head.add_run("\t")
-    head.add_run("Standard Operating Procedure")
-    foot = sec.footer.paragraphs[0]
-    bw.clear_paragraph(foot)
-    foot.style = doc.styles["Footer"]
-    foot.add_run(sop_id)
-    foot.add_run("\t")
-    foot.add_run("Page ")
-    foot._p.append(bw.field("PAGE \\* MERGEFORMAT", "1"))
+    sec.different_first_page_header_footer = True
+    sop_head(sec.header.paragraphs[0], doc, program)
+    sop_foot(sec.footer.paragraphs[0], doc, sop_id)
+    first = sec.first_page_header.paragraphs[0]
+    bw.clear_paragraph(first)
+    first.style = doc.styles["Normal"]
+    first.paragraph_format.space_after = 0
+    bw.anchor_behind(bw.add_band(first))
+    bw.add_program(sec.first_page_header)
+    line = sec.first_page_header.add_paragraph()
+    sop_head(line, doc, program)
+    line.paragraph_format.space_before = HEAD_BELOW_BAND * 635
+    sop_foot(sec.first_page_footer.paragraphs[0], doc, sop_id)
+
+
+def set_sop_program(doc, program):
+    bw.set_program(doc, program)
+    doc.sections[0].first_page_header.paragraphs[2].runs[0].text = bw.header_mark(program)
+
+
+def set_sop_id(doc, sop_id):
+    sec = doc.sections[0]
+    for foot in (sec.footer, sec.first_page_footer):
+        foot.paragraphs[0].runs[0].text = sop_id
 
 
 def sop_table(doc, rows, widths):
@@ -165,7 +195,8 @@ def build_template(path):
     bw.save_stable(doc, path)
 
 
-SAMPLE_ID = "NEUROMINE-SOP-NNN-V1"
+SAMPLE_ID = "ALSTDI-SOP-NNN-V1"
+SAMPLE_PROGRAM = "ALS TDI"
 SAMPLE_TITLE = "Monthly Brand Check of Published Documents"
 SAMPLE = {
     "Purpose": [
@@ -173,7 +204,7 @@ SAMPLE = {
         ("Normal", None, "The check uses the checkers that ship with the brand skill, so two people who run it on the same files get the same result. The SOP describes the check as the team runs it today."),
     ],
     "Scope": [
-        ("Normal", None, "It applies to every Word document, PowerPoint deck, Excel workbook, Markdown page and HTML page that the data team published to a shared site or sent outside the team in the past month, for every program the team serves."),
+        ("Normal", None, "It applies to every Word document, PowerPoint deck, Excel workbook, Markdown page and HTML page that the data team published to a shared site or sent outside the team in the past month, for the ALS TDI program."),
         ("Normal", None, "It does not cover SOPs, data files such as release indexes, or documents that another team owns. A team member on the monthly rota runs the check. The data owner reviews the result and signs off the month."),
     ],
     "Definitions and Acronyms": [
@@ -271,8 +302,8 @@ def build_sample(template, path):
         fill_cell(cell, text)
     for cell, text in zip(revision_table.rows[1].cells, ["1", "2026-11-04", "Initial SOP."]):
         fill_cell(cell, text)
-    foot = doc.sections[0].footer.paragraphs[0]
-    foot.runs[0].text = SAMPLE_ID
+    set_sop_id(doc, SAMPLE_ID)
+    set_sop_program(doc, SAMPLE_PROGRAM)
     for name, (head, lines) in section_blocks(doc).items():
         fill_section(doc, head, lines, SAMPLE[name])
     bw.set_core(doc, SAMPLE_TITLE)
