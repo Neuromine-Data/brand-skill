@@ -1,0 +1,17 @@
+.env
+.env.*
+*ReleaseIndex*
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.h5ad
+*.h5
+*.bam
+*.cram
+*.vcf
+*.vcf.gz
+*.rds
+__pycache__/
+~$*
+.DS_Store
